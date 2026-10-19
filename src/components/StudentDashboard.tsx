@@ -149,8 +149,12 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
       {/* Student Welcome Card */}
       <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-3xl shadow-xs">
-            {student.avatar || '👦'}
+          <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center overflow-hidden shadow-xs shrink-0">
+            {student.avatar && (student.avatar.startsWith('http') || student.avatar.startsWith('/')) ? (
+              <img src={student.avatar} alt={student.name} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-3xl">{student.avatar || '👦'}</span>
+            )}
           </div>
           <div>
             <div className="flex items-center gap-2">

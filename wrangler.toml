@@ -1,8 +1,24 @@
 name = "homework-tracker"
-main = "src/worker.js"
+main = "src/worker.ts"
 compatibility_date = "2026-09-29"
 
 [assets]
 directory = "./dist"
 binding = "ASSETS"
-not_found_handling = "single-page-application"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "homework-tracker-db"
+database_id = "8bcf7b98-2b9f-4433-af3a-44d948497185"
+
+[ai]
+binding = "AI"
+
+[vars]
+GOOGLE_CLIENT_ID = "402996143343-cu2usdu7k66r0qhq47ultl36eg7fsgt1.apps.googleusercontent.com"
+ADMIN_EMAILS = "seree999@gmail.com"
+APP_URL = "https://homework-tracker.674295029.workers.dev"
+
+# Secrets (set via `wrangler secret put`):
+# - GOOGLE_CLIENT_SECRET
+# - SESSION_SECRET

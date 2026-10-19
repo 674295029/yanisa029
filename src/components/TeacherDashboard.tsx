@@ -39,8 +39,27 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
   const currentAssignment = assignments.find((a) => a.id === selectedAssignmentId) || assignments[0];
 
-  // Filter students enrolled in this classroom
-  const enrolledStudents = students.filter((s) => classroom.memberStudentIds.includes(s.id));
+  // Combine students enrolled in this classroom + students who submitted work
+  const studentMap = new Map<string, User>();
+  students.forEach((s) => {
+    if (!classroom.memberStudentIds || classroom.memberStudentIds.length === 0 || classroom.memberStudentIds.includes(s.id)) {
+      studentMap.set(s.id, s);
+    }
+  });
+
+  submissions.forEach((sub) => {
+    if (!studentMap.has(sub.studentId)) {
+      studentMap.set(sub.studentId, {
+        id: sub.studentId,
+        name: sub.studentName,
+        email: '',
+        role: 'student',
+        studentNumber: sub.studentNumber,
+      });
+    }
+  });
+
+  const enrolledStudents = Array.from(studentMap.values());
 
   // Submissions for currently selected assignment
   const currentSubmissions = submissions.filter((s) => s.assignmentId === currentAssignment?.id);
@@ -315,8 +334,18 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                           {student.studentNumber ? student.studentNumber.slice(-2) : index + 1}
                         </td>
                         <td className="px-4 py-3.5">
-                          <div className="flex items-center gap-2">
-                            <span className="text-lg">{student.avatar || '👤'}</span>
+                          <div className="flex items-center gap-2.5">
+                            {student.avatar && (student.avatar.startsWith('http') || student.avatar.startsWith('/')) ? (
+                              <img
+                                src={student.avatar}
+                                alt={student.name}
+                                className="w-8 h-8 rounded-full object-cover border border-slate-200 shrink-0"
+                              />
+                            ) : (
+                              <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center shrink-0 text-xs">
+                                {student.avatar || student.name.charAt(0).toUpperCase()}
+                              </div>
+                            )}
                             <div>
                               <p className="font-semibold text-slate-800">{student.name}</p>
                               <p className="text-xs text-slate-400 font-mono">{student.studentNumber || student.email}</p>
@@ -412,7 +441,17 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
               {/* Student info box */}
               <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <span className="text-2xl">{gradingSubmission.student.avatar || '👤'}</span>
+                  {gradingSubmission.student.avatar && (gradingSubmission.student.avatar.startsWith('http') || gradingSubmission.student.avatar.startsWith('/')) ? (
+                    <img
+                      src={gradingSubmission.student.avatar}
+                      alt={gradingSubmission.student.name}
+                      className="w-10 h-10 rounded-full object-cover border border-slate-200 shrink-0"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center shrink-0 text-sm">
+                      {gradingSubmission.student.avatar || gradingSubmission.student.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                   <div>
                     <p className="font-bold text-slate-800 text-sm">{gradingSubmission.student.name}</p>
                     <p className="text-xs text-slate-500 font-mono">
